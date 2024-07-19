@@ -1,0 +1,154 @@
+# Regression Analysis
+
+## Simple and Multiple Linear Regression (OLS, MLR)
+
+Regression analysis is used to understand the relationship between a dependent variable and one or more independent variables. It helps in predicting the value of the dependent variable based on the values of the independent variables.
+
+### Constructing and Fitting Regression Models
+- **Simple Linear Regression**: This involves a single independent variable. The relationship between the dependent variable \(y\) and the independent variable \(x\) is modeled as \(y = \beta_0 + \beta_1 x + \epsilon\).
+- **Multiple Linear Regression**: This involves multiple independent variables. The relationship is modeled as \(y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_p x_p + \epsilon\).
+
+### Understanding Coefficients and Predictions
+- **Coefficients**: The coefficients \(\beta_i\) represent the change in the dependent variable for a one-unit change in the independent variable.
+- **Predictions**: Once the model is fitted, it can be used to predict the values of the dependent variable for given values of the independent variables.
+
+### Multiple Regression and Adjusting for Confounders
+- **Confounders**: Variables that influence both the dependent and independent variables. Multiple regression helps in adjusting for these confounders by including them in the model.
+
+**Example and Demonstration**:
+
+```{r}
+# Example data
+set.seed(123)
+x1 <- rnorm(100, mean = 5)
+x2 <- rnorm(100, mean = 7)
+y <- 3 + 2*x1 + 1.5*x2 + rnorm(100)
+
+data <- data.frame(y, x1, x2)
+
+# Fit Simple Linear Regression
+model_simple <- lm(y ~ x1, data = data)
+summary(model_simple)
+
+# Fit Multiple Linear Regression
+model_multiple <- lm(y ~ x1 + x2, data = data)
+summary(model_multiple)
+```
+
+## Diagnostics and Assumptions of Linear Models
+
+### Residual Analysis and Model Fit
+- **Residuals**: The differences between the observed and predicted values. Residual analysis helps in checking the assumptions of the model.
+- **Model Fit**: Assessed using various statistics like R-squared, which indicates the proportion of variance explained by the model.
+
+### Checking for Heteroscedasticity and Multicollinearity
+- **Heteroscedasticity**: Occurs when the variance of the residuals is not constant. This can be checked using plots of residuals vs fitted values.
+- **Multicollinearity**: Occurs when independent variables are highly correlated. This can be checked using the Variance Inflation Factor (VIF).
+
+### Model Selection Criteria (AIC, BIC, R-squared)
+- **AIC (Akaike Information Criterion)**: A measure of the relative quality of a statistical model for a given set of data.
+- **BIC (Bayesian Information Criterion)**: Similar to AIC but with a larger penalty for models with more parameters.
+- **R-squared**: Indicates the proportion of variance in the dependent variable that is predictable from the independent variables.
+
+**Example and Demonstration**:
+
+```{r}
+# Residual analysis
+par(mfrow = c(2, 2))
+plot(model_multiple)
+
+# Check for heteroscedasticity
+library(car)
+ncvTest(model_multiple)
+
+# Check for multicollinearity
+vif(model_multiple)
+```
+
+# Practical Applications and Demonstrations of Regression Analysis
+
+## Introduction
+
+This section transitions from theoretical understanding to practical application, allowing students to apply regression analysis concepts to real-world data. Through hands-on activities, we aim to deepen comprehension and enhance analytical skills.
+
+## Engaging with Real Data: Understanding Through Action
+
+### Constructing and Interpreting Regression Models
+- **Objective**: Fit and interpret simple and multiple linear regression models.
+- **Activity**:
+  - Construct regression models using real data.
+  - Interpret the coefficients and assess the fit of the models.
+
+**Example: Predicting House Prices**
+
+```{r}
+# Sample data: House prices, square footage, and number of bedrooms
+set.seed(123)
+prices <- c(300000, 350000, 400000, 250000, 450000, 500000)
+sqft <- c(1500, 1600, 1700, 1400, 1800, 2000)
+bedrooms <- c(3, 3, 4, 2, 4, 5)
+
+house_data <- data.frame(prices, sqft, bedrooms)
+
+# Fit Simple Linear Regression
+model_simple <- lm(prices ~ sqft, data = house_data)
+summary(model_simple)
+
+# Fit Multiple Linear Regression
+model_multiple <- lm(prices ~ sqft + bedrooms, data = house_data)
+summary(model_multiple)
+```
+
+### Residual Analysis and Model Diagnostics
+- **Objective**: Validate regression models by analyzing residuals and checking assumptions.
+- **Activity**:
+  - Perform residual analysis.
+  - Check for heteroscedasticity and multicollinearity.
+
+**Example: Residual Analysis**
+
+```{r}
+# Residual analysis
+par(mfrow = c(2, 2))
+plot(model_multiple)
+
+# Check for heteroscedasticity
+ncvTest(model_multiple)
+
+# Check for multicollinearity
+vif(model_multiple)
+```
+
+### Model Selection and Comparison
+- **Objective**: Compare different regression models using selection criteria like AIC and BIC.
+- **Activity**:
+  - Fit multiple models to the same data.
+  - Compare models using AIC and BIC to select the best model.
+
+**Example: Model Selection**
+
+```{r}
+# Model 1: Simple linear regression
+model1 <- lm(prices ~ sqft, data = house_data)
+
+# Model 2: Multiple linear regression
+model2 <- lm(prices ~ sqft + bedrooms, data = house_data)
+
+# Compare AIC and BIC
+AIC(model1, model2)
+BIC(model1, model2)
+```
+
+## Summary
+
+### Recap of Key Points
+- We discussed constructing and fitting simple and multiple linear regression models.
+- The importance of residual analysis and model diagnostics was highlighted.
+- Model selection criteria like AIC and BIC were introduced to compare different models.
+
+### Further Reading and Resources
+- **Books**: "An Introduction to Statistical Learning" by Gareth James, Daniela Witten, Trevor Hastie, and Robert Tibshirani provides a comprehensive understanding of regression and other statistical methods.
+- **Online Courses**: Platforms like Coursera and edX offer courses on regression analysis and related statistical techniques.
+- **Articles**: Research articles in journals like the "Journal of Applied Statistics" provide deeper insights and case studies involving regression analysis.
+
+Students, by now, can enhance their ability to conduct and interpret regression analyses, preparing them for professional roles that require strong statistical analysis skills.

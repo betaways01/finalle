@@ -1,0 +1,162 @@
+# Code Challenge 2: Descriptive Statistics, Probability, and Inferential Statistics (After Module 07)
+
+**Objective**: Test students on their understanding of descriptive statistics, probability distributions, and inferential statistics.
+
+**Modules Covered**: 05-DescriptiveStatistics.Rmd, 06-ProbabilityAndStatistics.Rmd, 07-InferentialAndHypothesis.Rmd
+
+- ## Instructions:
+
+1. **Descriptive Statistics**:
+    - **Task 1**: Calculate the mean, median, mode, variance, and standard deviation of a given dataset.
+    - **Task 2**: Normalize and standardize the dataset.
+    - **Task 3**: Create histograms and box plots to visualize the data distribution.
+
+2. **Probability Distributions**:
+    - **Task 4**: Demonstrate the use of binomial, Poisson, and normal distributions.
+    - **Task 5**: Simulate the Central Limit Theorem (CLT) using a random dataset.
+
+3. **Inferential Statistics**:
+    - **Task 6**: Conduct a chi-square test to assess the relationship between two categorical variables.
+    - **Task 7**: Perform a one-sample t-test to compare a sample mean to a known population mean.
+    - **Task 8**: Use a non-parametric test (Mann-Whitney U test) to compare two groups with non-normally distributed data.
+
+- ## Template:
+
+```r
+# CODE CHALLENGE 2 TEMPLATE
+
+# STUDENT NAME: ______________________
+# STUDENT ID: ________________________
+
+########################
+# SECTION 1: Descriptive Statistics
+########################
+
+# Task 1: Calculate the mean, median, mode, variance, and standard deviation of a given dataset.
+
+# Sample data
+data <- c(22, 24, 24, 18, 30, 32, 19, 21, 24, 20, 23, 19, 22, 25)
+
+# Calculating mean
+mean_value <- mean(data)
+print(paste("Mean:", mean_value))
+
+# Calculating median
+median_value <- median(data)
+print(paste("Median:", median_value))
+
+# Calculating mode
+get_mode <- function(x) {
+  uniqx <- unique(x)
+  uniqx[which.max(tabulate(match(x, uniqx)))]
+}
+mode_value <- get_mode(data)
+print(paste("Mode:", mode_value))
+
+# Calculating variance
+variance_value <- var(data)
+print(paste("Variance:", variance_value))
+
+# Calculating standard deviation
+sd_value <- sd(data)
+print(paste("Standard Deviation:", sd_value))
+
+# Task 2: Normalize and standardize the dataset.
+
+# Normalization
+normalize <- function(x) {
+  (x - min(x)) / (max(x) - min(x))
+}
+normalized_data <- normalize(data)
+print("Normalized Data:")
+print(normalized_data)
+
+# Standardization
+standardize <- function(x) {
+  (x - mean(x)) / sd(x)
+}
+standardized_data <- standardize(data)
+print("Standardized Data:")
+print(standardized_data)
+
+# Task 3: Create histograms and box plots to visualize the data distribution.
+
+library(ggplot2)
+
+# Histogram
+ggplot(data.frame(data), aes(x = data)) +
+  geom_histogram(binwidth = 1, fill = 'blue', color = 'black') +
+  ggtitle("Histogram of Data")
+
+# Box Plot
+ggplot(data.frame(data), aes(y = data)) +
+  geom_boxplot(fill = 'tomato') +
+  ggtitle("Box Plot of Data")
+
+########################
+# SECTION 2: Probability Distributions
+########################
+
+# Task 4: Demonstrate the use of binomial, Poisson, and normal distributions.
+
+# Binomial example: Probability of exactly 6 heads in 10 fair coin tosses
+binom_prob <- dbinom(6, size = 10, prob = 0.5)
+print(paste("Binomial Probability (6 heads out of 10):", binom_prob))
+
+# Poisson example: Probability of receiving 3 emails in an hour if the average rate is 5 emails per hour
+pois_prob <- dpois(3, lambda = 5)
+print(paste("Poisson Probability (3 emails):", pois_prob))
+
+# Normal distribution example: Probability density of a score at the mean of a distribution
+norm_prob <- dnorm(0, mean = 0, sd = 1)
+print(paste("Normal Distribution Density (mean):", norm_prob))
+
+# Task 5: Simulate the Central Limit Theorem (CLT) using a random dataset.
+
+# Simulating sample means
+sample_means <- replicate(1000, mean(runif(50, min = 0, max = 1)))
+hist(sample_means, probability = TRUE, main = "CLT Simulation")
+lines(density(sample_means), col = "red")
+
+########################
+# SECTION 3: Inferential Statistics
+########################
+
+# Task 6: Conduct a chi-square test to assess the relationship between two categorical variables.
+
+# Sample data: Counts of male and female students preferring vegetarian and non-vegetarian diets
+diet_data <- matrix(c(30, 70, 45, 55), nrow = 2,
+                    dimnames = list(gender = c("Male", "Female"),
+                                    diet = c("Vegetarian", "Non-Vegetarian")))
+
+# Perform Chi-Square Test
+chi_test <- chisq.test(diet_data)
+print(chi_test)
+
+# Task 7: Perform a one-sample t-test to compare a sample mean to a known population mean.
+
+# Sample data
+study_times <- rnorm(25, mean = 3.8, sd = 1)
+
+# Perform the t-test
+t_test_results <- t.test(study_times, mu = 3.5)
+print(t_test_results)
+
+# Task 8: Use a non-parametric test (Mann-Whitney U test) to compare two groups with non-normally distributed data.
+
+# Data: Test scores from two small classes
+scores_class1 <- c(88, 82, 84, 91, 87, 85, 90)
+scores_class2 <- c(78, 81, 79, 74, 80, 83, 77)
+
+# Mann-Whitney U Test
+mann_whitney_test <- wilcox.test(scores_class1, scores_class2)
+print(mann_whitney_test)
+```
+
+- ## Submission Instructions:
+
+1. Complete the code challenge template by filling in your solutions in the specified sections.
+2. Save your completed R script with the filename format: `CodeChallenge2_YourName.R`
+3. Upload your script to your GitHub repository under the Code Challenges folder.
+4. The auto-grader will evaluate your submission and provide immediate feedback.
+5. Once you are satisfied with your marks, finalize your submission which will automatically be sent to the instructor's Google Drive for review.

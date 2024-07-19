@@ -1,0 +1,128 @@
+# Categorical Data Analysis
+
+## Introduction to Logistic Regression
+
+Logistic regression is used when the dependent variable is binary (i.e., it has two possible outcomes). It models the probability of the occurrence of an event by fitting data to a logistic curve.
+
+### Odds Ratios and Logit Function
+- **Odds Ratios**: The odds ratio is a measure of association between an exposure and an outcome. It represents the odds that an event will occur given a particular exposure, compared to the odds of the event occurring without that exposure.
+- **Logit Function**: The logit function is the natural logarithm of the odds of the dependent event. Logistic regression uses this function to model the relationship between the independent variables and the probability of the dependent event occurring.
+
+### Model Fitting and Interpretation
+- **Model Fitting**: Logistic regression models are fitted using maximum likelihood estimation. The coefficients obtained from the model represent the change in the log odds of the dependent variable for a one-unit change in the independent variable.
+- **Interpretation**: The exponentiated coefficients (exp(coef)) can be interpreted as odds ratios. A coefficient of 0 means no effect, positive coefficients increase the odds, and negative coefficients decrease the odds.
+
+**Example and Demonstration**:
+
+```{r}
+# Example data
+set.seed(123)
+x1 <- rnorm(100)
+x2 <- rnorm(100)
+y <- rbinom(100, 1, prob = 1 / (1 + exp(-(0.5 + 1.5 * x1 - 1 * x2))))
+
+data <- data.frame(y, x1, x2)
+
+# Fit Logistic Regression
+model_logit <- glm(y ~ x1 + x2, data = data, family = binomial)
+summary(model_logit)
+
+# Interpretation of coefficients
+exp(coef(model_logit))
+```
+
+### Assessing Model Goodness of Fit
+- **Goodness of Fit**: The goodness of fit of a logistic regression model can be assessed using various methods such as the Hosmer-Lemeshow test, Akaike Information Criterion (AIC), and analysis of residuals.
+- **Example**: Use the Hosmer-Lemeshow test to assess the model fit.
+
+```{r}
+# Assessing model goodness of fit
+library(ResourceSelection)
+hoslem.test(data$y, fitted(model_logit))
+```
+
+## Modeling and Interpretation of Binary Outcomes
+
+### Predictive Modeling with Binary Data
+Logistic regression is commonly used for predictive modeling with binary outcomes. The model predicts the probability that a given input belongs to one of the two outcome categories.
+
+### Evaluating Model Performance (ROC Curves, AUC)
+- **ROC Curve**: A Receiver Operating Characteristic (ROC) curve is a graphical representation of a model's diagnostic ability. It plots the true positive rate (sensitivity) against the false positive rate (1 - specificity) for different threshold values.
+- **AUC (Area Under the Curve)**: The AUC is a single scalar value that summarizes the performance of the model across all threshold values. A higher AUC indicates better model performance.
+
+**Example and Demonstration**:
+
+```{r}
+# ROC Curve and AUC
+library(pROC)
+roc_curve <- roc(data$y, fitted(model_logit))
+plot(roc_curve)
+auc(roc_curve)
+```
+
+## Comprehensive Exercise: Logistic Regression with the `iris` Dataset
+
+### Exercise: Logistic Regression Analysis
+
+**Objective**: Use logistic regression to analyze the binary outcome variable in the `iris` dataset. The exercise will include fitting the model, interpreting the results, assessing goodness of fit, and evaluating model performance.
+
+**Steps**:
+1. **Fit a logistic regression model**.
+2. **Interpret the coefficients**.
+3. **Assess model goodness of fit**.
+4. **Evaluate model performance using ROC curves and AUC**.
+
+### Detailed Steps
+
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(caret)
+library(dplyr)
+library(pROC)
+library(ResourceSelection)
+
+# Load the dataset and create a binary outcome variable
+data <- iris
+data$Species <- ifelse(data$Species == "setosa", 1, 0)
+
+# 1. Fit Logistic Regression
+model_logit <- glm(Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, 
+                   data = data, family = binomial)
+summary(model_logit)
+
+# 2. Interpretation of coefficients
+exp(coef(model_logit))
+
+# 3. Assessing model goodness of fit
+hoslem_test <- hoslem.test(data$Species, fitted(model_logit))
+print(hoslem_test)
+
+# 4. ROC Curve and AUC
+roc_curve <- roc(data$Species, fitted(model_logit))
+plot(roc_curve)
+auc(roc_curve)
+
+# Comprehensive script
+logistic_regression_analysis <- function(data) {
+  # Fit Logistic Regression
+  model_logit <- glm(Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, 
+                     data = data, family = binomial)
+  print(summary(model_logit))
+  
+  # Interpretation of coefficients
+  print(exp(coef(model_logit)))
+  
+  # Assessing model goodness of fit
+  hoslem_test <- hoslem.test(data$Species, fitted(model_logit))
+  print(hoslem_test)
+  
+  # ROC Curve and AUC
+  roc_curve <- roc(data$Species, fitted(model_logit))
+  plot(roc_curve)
+  print(auc(roc_curve))
+}
+
+# Run the comprehensive analysis
+logistic_regression_analysis(data)
+```

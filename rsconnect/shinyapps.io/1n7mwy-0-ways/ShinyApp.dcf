@@ -1,0 +1,12 @@
+name: ShinyApp
+title: ShinyApp
+username: 1n7mwy-0-ways
+account: 1n7mwy-0-ways
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 12314955
+bundleId: 8870692
+url: https://1n7mwy-0-ways.shinyapps.io/ShinyApp/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

@@ -1,0 +1,211 @@
+# Advanced Data Manipulation and Transformation (`OPTIONAL`)
+
+In advanced data analysis, efficiently manipulating and transforming data is crucial. The `tidyverse` package in R provides a powerful and coherent set of tools for data wrangling.
+
+By following this comprehensive exercise, students will gain hands-on experience with advanced data manipulation and transformation techniques using the `tidyverse` package in R. This will prepare them for tackling complex data wrangling tasks in their data analysis projects.
+
+## Tidyverse Approaches to Data Wrangling
+
+The `tidyverse` is a collection of R packages designed for data science. It includes `dplyr` for data manipulation, `tidyr` for data tidying, and `ggplot2` for data visualization.
+
+### Key Functions in `dplyr`
+- **`select()`**: Select specific columns.
+- **`filter()`**: Filter rows based on conditions.
+- **`mutate()`**: Create new columns or modify existing ones.
+- **`summarise()`**: Summarize data (e.g., calculating means or counts).
+- **`group_by()`**: Group data by one or more variables.
+
+**Example**:
+
+```{r}
+library(tidyverse)
+
+# Load the dataset
+data <- iris
+
+# Select specific columns
+selected_data <- data %>%
+  select(Sepal.Length, Species)
+
+# Filter rows based on condition
+filtered_data <- data %>%
+  filter(Sepal.Length > 5)
+
+# Create a new column
+mutated_data <- data %>%
+  mutate(Sepal.Ratio = Sepal.Length / Sepal.Width)
+
+# Summarize data
+summary_data <- data %>%
+  group_by(Species) %>%
+  summarise(Mean_Sepal.Length = mean(Sepal.Length),
+            Count = n())
+```
+
+## Dealing with Text and Categorical Data
+
+Handling text and categorical data involves operations like re-coding factors, string manipulation, and one-hot encoding.
+
+### Key Functions
+- **`factor()`**: Create or modify factors.
+- **`str_*` functions**: String manipulation functions from the `stringr` package (part of `tidyverse`).
+
+**Example**:
+
+```{r}
+# Create a factor variable
+data$Species <- factor(data$Species, levels = c("setosa", "versicolor", "virginica"))
+
+# String manipulation
+library(stringr)
+text_data <- c("apple", "banana", "cherry")
+text_lengths <- str_length(text_data)
+text_upper <- str_to_upper(text_data)
+```
+
+## Working with Dates and Times
+
+Handling dates and times is critical in many data analyses. The `lubridate` package (part of the `tidyverse`) makes it easier to work with date-time data.
+
+### Key Functions
+- **`ymd()`, `mdy()`, `dmy()`**: Parse dates in different formats.
+- **`year()`, `month()`, `day()`**: Extract components of dates.
+- **`now()`**: Get the current date and time.
+
+**Example**:
+
+```{r}
+library(lubridate)
+
+# Parse dates
+dates <- c("2023-01-01", "2023-02-15", "2023-03-10")
+parsed_dates <- ymd(dates)
+
+# Extract components
+years <- year(parsed_dates)
+months <- month(parsed_dates)
+days <- day(parsed_dates)
+
+# Get current date and time
+current_time <- now()
+```
+
+# Comprehensive Exercise: Data Wrangling and Transformation with `tidyverse`
+
+## Exercise: Advanced Data Manipulation with the `mtcars` Dataset
+
+**Objective**: Use `tidyverse` functions to perform advanced data manipulation and transformation tasks on the `mtcars` dataset.
+
+**Steps**:
+1. **Select and rename columns**.
+2. **Filter rows based on multiple conditions**.
+3. **Create new columns and modify existing ones**.
+4. **Group data and calculate summary statistics**.
+5. **Handle categorical data and perform string manipulations**.
+6. **Work with date-time data**.
+
+## Detailed Steps
+
+```{r}
+# Load necessary libraries
+library(tidyverse)
+library(lubridate)
+
+# Load the dataset
+data <- mtcars
+
+# 1. Select and rename columns
+selected_data <- data %>%
+  select(mpg, cyl, hp, wt) %>%
+  rename(Miles_Per_Gallon = mpg, 
+         Cylinders = cyl, 
+         Horsepower = hp, 
+         Weight = wt)
+
+# 2. Filter rows based on multiple conditions
+filtered_data <- selected_data %>%
+  filter(Miles_Per_Gallon > 20, Cylinders == 4)
+
+# 3. Create new columns and modify existing ones
+mutated_data <- filtered_data %>%
+  mutate(Horsepower_per_Weight = Horsepower / Weight,
+         Weight_Category = ifelse(Weight > 3, "Heavy", "Light"))
+
+# 4. Group data and calculate summary statistics
+summary_data <- mutated_data %>%
+  group_by(Weight_Category) %>%
+  summarise(Mean_Horsepower_per_Weight = mean(Horsepower_per_Weight),
+            Count = n())
+
+# 5. Handle categorical data and perform string manipulations
+# Create a factor variable
+mutated_data$Weight_Category <- factor(mutated_data$Weight_Category)
+
+# String manipulation example
+car_names <- rownames(data)
+car_name_lengths <- str_length(car_names)
+car_name_upper <- str_to_upper(car_names)
+
+# 6. Work with date-time data
+# Create a sample date column
+mutated_data <- mutated_data %>%
+  mutate(Sample_Date = ymd("2023-05-01") + days(1:n()))
+
+# Extract components of dates
+mutated_data <- mutated_data %>%
+  mutate(Year = year(Sample_Date),
+         Month = month(Sample_Date),
+         Day = day(Sample_Date))
+
+# Comprehensive script
+mtcars_analysis <- function() {
+  # Load and manipulate data
+  data <- mtcars
+  
+  # Select and rename columns
+  selected_data <- data %>%
+    select(mpg, cyl, hp, wt) %>%
+    rename(Miles_Per_Gallon = mpg, 
+           Cylinders = cyl, 
+           Horsepower = hp, 
+           Weight = wt)
+
+  # Filter rows based on conditions
+  filtered_data <- selected_data %>%
+    filter(Miles_Per_Gallon > 20, Cylinders == 4)
+
+  # Create and modify columns
+  mutated_data <- filtered_data %>%
+    mutate(Horsepower_per_Weight = Horsepower / Weight,
+           Weight_Category = ifelse(Weight > 3, "Heavy", "Light"))
+
+  # Group and summarize data
+  summary_data <- mutated_data %>%
+    group_by(Weight_Category) %>%
+    summarise(Mean_Horsepower_per_Weight = mean(Horsepower_per_Weight),
+              Count = n())
+
+  print("Summary Data:")
+  print(summary_data)
+
+  # String manipulation
+  car_names <- rownames(data)
+  car_name_lengths <- str_length(car_names)
+  car_name_upper <- str_to_upper(car_names)
+  print("Car Names in Upper Case:")
+  print(car_name_upper)
+
+  # Work with date-time data
+  mutated_data <- mutated_data %>%
+    mutate(Sample_Date = ymd("2023-05-01") + days(1:n()),
+           Year = year(Sample_Date),
+           Month = month(Sample_Date),
+           Day = day(Sample_Date))
+  
+  print("Mutated Data with Dates:")
+  print(mutated_data)
+}
+
+# Run the comprehensive analysis
+mtcars_analysis()
+```

@@ -1,0 +1,136 @@
+# Inferential Statistics and Hypothesis Testing
+
+## Theoretical Basis for Hypothesis Testing and Significance
+
+Inferential statistics allow researchers to make inferences about a population based on data collected from a sample. A core component of inferential statistics is hypothesis testing, which is a systematic method used to evaluate data and make decisions about a population parameter based on sample analysis.
+
+## Null and Alternative Hypotheses
+
+**Concepts**:
+- **Null Hypothesis (H0)**: This hypothesis states that there is no significant difference or effect, and any observed difference is due to sampling or experimental error. It represents a statement of "no effect" or "no difference."
+- **Alternative Hypothesis (H1 or Ha)**: This hypothesis is considered when the null hypothesis is rejected. It suggests that there is a true effect, and observed differences are not due to chance alone.
+
+**Example in Context**:
+Suppose a school claims their students' average test score is 75. To challenge this, we could set up:
+- **H0**: The average score is 75 (µ = 75).
+- **H1**: The average score is not 75 (µ ≠ 75).
+
+## Type I and Type II Errors
+
+**Definitions**:
+- **Type I Error (α)**: Occurs when the null hypothesis is true, but we incorrectly reject it. It's often called a "false positive." The significance level (α), commonly set at 0.05, defines the probability of this error.
+- **Type II Error (β)**: Happens when the null hypothesis is false, but we fail to reject it. This error is known as a "false negative." The power of the test (1 - β) measures the ability to avoid this error.
+
+**Example in Practice**:
+Using the school example, a Type I error would mean concluding that the average score is not 75 when it actually is 75. A Type II error would mean failing to reject the claim that the average is 75 when it is actually different.
+
+## p-Values and Confidence Intervals
+
+**Understanding p-Values**:
+- A p-value is the probability of obtaining results at least as extreme as the observed results of a statistical hypothesis test, assuming that the null hypothesis is correct.
+- A small p-value (≤ 0.05) indicates strong evidence against the null hypothesis, leading to its rejection.
+
+**Confidence Intervals**:
+- A confidence interval (CI) is a range of values that's used to estimate the true parameter of the population. For example, a 95% CI indicates that if the same population is sampled 100 times, approximately 95 of those confidence intervals will contain the true population parameter.
+- CIs provide a measure of precision for an estimate.
+
+**Demonstration with R**:
+
+Suppose we have a sample of student scores from the school, and we want to test the claim:
+
+```{r}
+set.seed(123)
+sample_scores <- rnorm(30, mean = 75, sd = 10)  # 30 sample scores with a mean of 75 and sd of 10
+
+# Perform a One-Sample t-test
+test_results <- t.test(sample_scores, mu = 75)
+
+# Output the p-value and confidence interval
+print(paste("p-value:", test_results$p.value))
+print(paste("95% Confidence Interval:", paste(test_results$conf.int[1], test_results$conf.int[2], sep = " to ")))
+```
+
+This section provides a foundational understanding of hypothesis testing, equipping students with the knowledge to apply these concepts effectively in their own research and analysis. Through practical examples and demonstrations, students are encouraged to explore these statistical tools and understand their implications in real-world scenarios.
+
+## Chi-Square, t-tests, z-tests, and Non-Parametric Tests
+
+This section of the curriculum focuses on specific statistical tests used for hypothesis testing, each appropriate for different types of data and research questions. Understanding when and how to apply these tests is crucial for proper data analysis.
+
+### Conducting and Interpreting Chi-Square Tests
+
+**Purpose and Application**:
+- The Chi-Square test is primarily used to determine whether there is a significant association between two categorical variables. It's often applied in market research, opinion polls, and educational research, among other fields.
+
+**Example and Demonstration**:
+- Consider a study wanting to explore if diet preference (vegetarian vs. non-vegetarian) is associated with gender among college students.
+
+```{r}
+# Sample data: Counts of male and female students preferring vegetarian and non-vegetarian diets
+diet_data <- matrix(c(30, 70, 45, 55), nrow = 2,
+                    dimnames = list(gender = c("Male", "Female"),
+                                    diet = c("Vegetarian", "Non-Vegetarian")))
+
+# Perform Chi-Square Test
+chi_test <- chisq.test(diet_data)
+
+# Output test results
+print(chi_test)
+```
+
+### One-sample and Two-sample t-tests
+
+**Purpose and Application**:
+- **One-sample t-test**: Tests whether the mean of a single group differs from a specified mean.
+- **Two-sample t-test** (independent samples): Tests whether the means of two groups are different.
+
+**Example and Demonstration**:
+- One-sample t-test: Testing if the average IQ of a sample of students is different from the national average IQ of 100.
+- Two-sample t-test: Comparing the average test scores of two different classes.
+
+```{r}
+# One-sample t-test
+iq_scores <- rnorm(25, mean = 102, sd = 15)  # Sample of 25 students
+t_test_one <- t.test(iq_scores, mu = 100)
+
+# Two-sample t-test
+class1_scores <- rnorm(30, mean = 78, sd = 10)
+class2_scores <- rnorm(30, mean = 85, sd = 10)
+t_test_two <- t.test(class1_scores, class2_scores)
+
+# Output test results
+print(t_test_one)
+print(t_test_two)
+```
+
+### Non-Parametric Alternatives to Parametric Tests
+
+**Purpose and Application**:
+- Non-parametric tests do not assume a specific distribution in the data and are useful when the assumptions for parametric tests (like normal distribution) are not met. These include tests like the Mann-Whitney U test, Wilcoxon Signed-Rank test, and Kruskal-Wallis test.
+
+**Example and Demonstration**:
+- Using the Mann-Whitney U test to compare the distributions of two groups' data that are not normally distributed.
+
+```{r}
+# Data: Test scores from two small classes
+scores_class1 <- c(88, 82, 84, 91, 87, 85, 90)
+scores_class2 <- c(78, 81, 79, 74, 80, 83, 77)
+
+# Mann-Whitney U Test
+mann_whitney_test <- wilcox.test(scores_class1, scores_class2)
+
+# Output test results
+print(mann_whitney_test)
+```
+
+## Summary
+
+### Recap of Key Points
+- We explored how probability distributions can inform decision-making, demonstrated the Central Limit Theorem through simulations, and applied the Law of Large Numbers to observe the stability of averages over time.
+- We discussed how inferential statistics allow researchers to make inferences about a population based on sample data, focusing on hypothesis testing and significance.
+
+### Further Reading and Resources
+- **Books**: "Probability and Statistics" by Morris H. DeGroot and Mark J. Schervish offers comprehensive insights into the theories discussed.
+- **Online Courses**: Platforms like Coursera and Khan Academy provide courses on statistics that further explore these topics.
+- **Articles**: Research articles on the application of statistical methods in business and science can provide deeper insights into advanced topics.
+
+By engaging with real datasets and simulations, students enhance their ability to interpret and analyze data effectively, preparing them for professional roles that demand strong analytical capabilities.

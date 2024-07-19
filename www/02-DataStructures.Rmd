@@ -1,0 +1,181 @@
+# Data Structures and Data Handling in R (Light Focus)
+
+## Overview of Vectors, Matrices, Lists, and Data Frames
+
+Understanding and effectively manipulating basic data structures in R is foundational for all subsequent data manipulation and analysis tasks. This section will guide you through creating and working with vectors, matrices, lists, and data frames.
+
+## Creating and Manipulating Vectors
+
+Vectors are the simplest and most common data structure in R. They store an ordered collection of elements of the same type. Understanding vectors is crucial as they form the building blocks for more complex data structures.
+
+```{r}
+# Creating a numeric vector
+numbers <- c(1, 2, 3, 4, 5)
+
+# Adding an element to the vector
+numbers <- c(numbers, 6)
+
+# Accessing specific elements in a vector using their index
+second_element <- numbers[2]  # Accesses the second element in the vector
+
+# Creating a vector for temperature conversion
+temperature_c <- c(23, 21, 24, 22, 20)
+temperature_f <- temperature_c * 9 / 5 + 32  # Convert to Fahrenheit
+print(temperature_f)
+```
+
+## Operations with Matrices and Arrays
+
+Matrices are vectors with a dimension attribute. They are useful for handling two-dimensional data. Arrays extend this concept to multiple dimensions.
+
+```{r}
+# Creating a matrix using the matrix function
+matrix_data <- matrix(1:9, nrow=3, ncol=3)
+
+# Accessing a specific element (row 1, column 2)
+element <- matrix_data[1, 2]
+
+# Transposing a matrix (switch rows and columns)
+transposed <- t(matrix_data)
+
+# Multiplying first row elements by 2 to demonstrate manipulation
+matrix_data[1, ] <- matrix_data[1, ] * 2
+print(matrix_data)
+print(transposed)
+```
+
+## Understanding Lists and Their Uses
+
+Lists in R are a generic vector capable of holding elements of different types. This makes them extremely versatile for datasets that require a mix of numeric, character, and logical types.
+
+```{r}
+# Creating a list with mixed types
+my_list <- list(name="John", scores=c(95, 82, 90), passed=TRUE)
+
+# Accessing elements within a list using the $ operator
+scores <- my_list$scores
+print(scores)
+
+# Adding a new element to the list to show its flexibility
+my_list$address <- "123 Elm St"
+print(my_list)
+```
+
+## Data Frames for Tabular Data
+
+Data frames are used extensively in R for storing tabular data. They resemble a table in a relational database or an Excel spreadsheet, with each column potentially holding a different type of data.
+
+```{r}
+# Creating a data frame
+students <- data.frame(
+  name = c("Alice", "Bob", "Carol"),
+  score = c(88, 93, 85),
+  pass = c(TRUE, TRUE, FALSE)
+)
+
+# Accessing a specific column using the $ operator
+names <- students$name
+
+# Adding a new column to indicate if the student scored an A (score > 90)
+students$grade <- ifelse(students$score > 90, "A", "B")
+print(students)
+```
+
+## Data Handling Techniques with dplyr
+
+The `dplyr` package in R is a powerful tool for data manipulation, providing a coherent set of verbs that help you solve the most common data manipulation challenges. This section will cover how to use these verbs to select, filter, arrange, mutate, summarize, join, and group your data.
+
+## Selecting, Filtering, and Arranging Data
+
+`dplyr` makes it easy to select specific columns of data, filter rows based on conditions, and arrange data in ascending or descending order.
+
+### Selecting Data
+
+Use `select()` to choose a subset of columns to keep.
+
+```{r}
+library(dplyr)
+
+# Sample data frame
+data <- data.frame(
+  name = c("Alice", "Bob", "Carol", "David"),
+  age = c(25, 30, 19, 22),
+  salary = c(50000, 54000, 32000, 45000)
+)
+
+# Selecting only the name and age columns
+selected_data <- select(data, name, age)
+print(selected_data)
+```
+
+### Filtering Data
+
+`filter()` is used to retrieve rows that meet certain conditions.
+
+```{r}
+# Filtering to find only those over 25 years old
+filtered_data <- filter(data, age > 25)
+print(filtered_data)
+```
+
+### Arranging Data
+
+`arrange()` is used to reorder rows of a data frame.
+
+```{r}
+# Arranging data by age in ascending order
+arranged_data <- arrange(data, age)
+print(arranged_data)
+```
+
+## Mutating and Summarizing Data Sets
+
+`mutate()` adds new variables that are functions of existing variables, and `summarise()` reduces multiple values down to a single summary.
+
+### Mutating Data
+
+```{r}
+# Adding a new column that calculates yearly savings potential
+mutated_data <- mutate(data, savings = salary * 0.1)
+print(mutated_data)
+```
+
+### Summarizing Data
+
+```{r}
+# Summarizing to find the average salary
+summary_data <- summarise(data, average_salary = mean(salary))
+print(summary_data)
+```
+
+## Joins and Data Merging Techniques
+
+`dplyr` provides several functions to merge data frames together, such as `left_join()`, `right_join()`, `inner_join()`, and `full_join()`.
+
+```{r}
+# Additional data frame with department information
+department_data <- data.frame(
+  name = c("Alice", "Bob", "David"),
+  department = c("Finance", "IT", "Marketing")
+)
+
+# Joining data on the name column
+joined_data <- left_join(data, department_data, by = "name")
+print(joined_data)
+```
+
+## Group Operations with `group_by` and `summarise`
+
+Grouping data makes it possible to compute summaries over groups of data.
+
+```{r}
+# Grouping data by department and calculating average salary
+grouped_data <- data %>%
+  left_join(department_data, by = "name") %>%
+  group_by(department) %>%
+  summarise(average_salary = mean(salary, na.rm = TRUE))
+
+print(grouped_data)
+```
+
+This demonstration of `dplyr`'s capabilities shows how straightforward it is to manipulate and analyze data sets in R. These functions are not only powerful but also help make your data manipulation tasks more readable and concise.
