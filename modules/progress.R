@@ -8,17 +8,17 @@ progressUI <- function(id) {
   tagList(
     h3("Your Progress"),
     tableOutput(ns("progress_table")),
-    actionButton(ns("refresh_progress"), "Refresh Progress"),
-    actionButton(ns("view_code_challenge_results"), "View Code Challenge Results", class = "btn-success")
+    h3("Your Code Challenge Progress"),
+    tableOutput(ns("code_challenge_progress_table")),
+    actionButton(ns("refresh_progress"), "Refresh Progress")
   )
 }
+
 progressServer <- function(id, rv) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
     updateProgressTable <- function() {
-      #message("Updating progress table...")  # Debug statement
-      
       # Connect to the database
       con <- get_db_connection()
       on.exit(dbDisconnect(con))
@@ -33,7 +33,6 @@ progressServer <- function(id, rv) {
         WHERE 
           sub.student_id = ?
       ", params = list(rv$student_id))
-      #message("Progress data: ", toString(progress_data))  # Debug statement
       
       # Query to get the exercise scores
       exercise_scores <- dbGetQuery(con, "
@@ -45,7 +44,6 @@ progressServer <- function(id, rv) {
         WHERE 
           student_id = ?
       ", params = list(rv$student_id))
-      #message("Exercise scores: ", toString(exercise_scores))  # Debug statement
       
       # Query to get the total score
       total_score <- dbGetQuery(con, "
@@ -56,7 +54,6 @@ progressServer <- function(id, rv) {
         WHERE 
           student_id = ?
       ", params = list(rv$student_id))
-      #message("Total score: ", toString(total_score))  # Debug statement
       
       # Initialize progress data
       progress_data_wide <- data.frame(
@@ -120,7 +117,64 @@ progressServer <- function(id, rv) {
         mutate(across(Q1:Total, as.integer))
       
       rv$progress <- progress_data_wide
-      #message("Updated progress data: ", toString(progress_data_wide))  # Debug statement
+    }
+    
+    updateCodeChallengeProgressTable <- function() {
+      # Connect to the database
+      con <- get_db_connection()
+      on.exit(dbDisconnect(con))
+      
+      # Query to get the code challenge progress data
+      progress_data <- dbGetQuery(con, "
+        SELECT 
+          sub.question_id,
+          sub.is_correct
+        FROM 
+          CcSubmissions sub
+        WHERE 
+          sub.student_id = ?
+      ", params = list(rv$student_id))
+      
+      # Initialize progress data
+      progress_data_wide <- data.frame(
+        Challenge = c("Challenge 1", "Challenge 2", "Challenge 3"),
+        Q1 = rep(0, 3),
+        Q2 = rep(0, 3),
+        Q3 = rep(0, 3),
+        Q4 = rep(0, 3),
+        Q5 = rep(0, 3),
+        Q6 = rep(0, 3),
+        Q7 = rep(0, 3),
+        Q8 = rep(0, 3),
+        Q9 = rep(0, 3),
+        Q10 = rep(0, 3),
+        Total = rep(0, 3)
+      )
+      
+      if (!is.null(progress_data) && nrow(progress_data) > 0) {
+        # Map questions to Q1, Q2, ..., Q10 based on question_id
+        progress_data$challenge_id <- as.integer(sapply(strsplit(sub("cc", "", as.character(progress_data$question_id)), "\\."), `[`, 1))
+        progress_data$question_num <- as.integer(sapply(strsplit(as.character(progress_data$question_id), "\\."), `[`, 2))
+        
+        for (i in 1:nrow(progress_data)) {
+          challenge_id <- progress_data$challenge_id[i]
+          question_num <- progress_data$question_num[i]
+          is_correct <- progress_data$is_correct[i]
+          
+          if (!is.na(question_num) && question_num >= 1 && question_num <= 10) {
+            progress_data_wide[challenge_id, paste0("Q", question_num)] <- is_correct
+          }
+        }
+        
+        # Calculate totals for each challenge
+        progress_data_wide$Total <- rowSums(progress_data_wide[, paste0("Q", 1:10)])
+      }
+      
+      # Ensure scores are discrete integers
+      progress_data_wide <- progress_data_wide %>%
+        mutate(across(Q1:Total, as.integer))
+      
+      rv$code_challenge_progress <- progress_data_wide
     }
     
     observeEvent(rv$student_name, {
@@ -128,74 +182,22 @@ progressServer <- function(id, rv) {
         # Retrieve or create student ID from the database
         rv$student_id <- get_or_create_student_id(rv$student_name)
         updateProgressTable()
+        updateCodeChallengeProgressTable()
       }
     })
     
     observeEvent(input$refresh_progress, {
-      message("Refresh button clicked...")  # Debug statement
       if (!is.null(rv$student_id)) {
         updateProgressTable()
+        updateCodeChallengeProgressTable()
         output$progress_table <- renderTable({
           rv$progress
         }, striped = TRUE, hover = TRUE, bordered = TRUE)
+        
+        output$code_challenge_progress_table <- renderTable({
+          rv$code_challenge_progress
+        }, striped = TRUE, hover = TRUE, bordered = TRUE)
       }
-    })
-    
-    observeEvent(input$upload_code_challenge, {
-      req(input$upload_code_challenge)
-      
-      # Determine which code challenge is being uploaded
-      code_challenge <- input$code_challenge_select
-      student_id <- rv$student_id
-      
-      # Process the uploaded file
-      file_path <- input$upload_code_challenge$datapath
-      code_content <- readLines(file_path)
-      
-      # Store the code in the database
-      con <- get_db_connection()
-      on.exit(dbDisconnect(con))
-      
-      dbExecute(con, "
-        INSERT OR REPLACE INTO CodeChallenges (student_id, code_challenge, code_content, upload_time) 
-        VALUES (?, ?, ?, datetime('now'))
-      ", params = list(student_id, code_challenge, paste(code_content, collapse = "\n")))
-      
-      # Auto-grade the submission (this is a placeholder for the actual grading logic)
-      score <- auto_grade_code(code_content)
-      
-      # Store the grade in the database
-      dbExecute(con, "
-        INSERT OR REPLACE INTO CodeChallengeScores (student_id, code_challenge, score, submission_time) 
-        VALUES (?, ?, ?, datetime('now'))
-      ", params = list(student_id, code_challenge, score))
-      
-      showModal(modalDialog(
-        title = "Code Challenge Result",
-        paste("Your code challenge has been graded. You scored", score, "/ 10."),
-        easyClose = TRUE,
-        footer = modalButton("Close")
-      ))
-    })
-    
-    observeEvent(input$view_code_challenge_scores, {
-      student_id <- rv$student_id
-      
-      con <- get_db_connection()
-      on.exit(dbDisconnect(con))
-      
-      scores <- dbGetQuery(con, "
-        SELECT code_challenge, score, submission_time 
-        FROM CodeChallengeScores 
-        WHERE student_id = ?
-      ", params = list(student_id))
-      
-      showModal(modalDialog(
-        title = "Code Challenge Scores",
-        renderTable(scores),
-        easyClose = TRUE,
-        footer = modalButton("Close")
-      ))
     })
     
     output$progress_table <- renderTable({
@@ -205,12 +207,13 @@ progressServer <- function(id, rv) {
       # Render the table
       progress_data
     }, striped = TRUE, hover = TRUE, bordered = TRUE)
+    
+    output$code_challenge_progress_table <- renderTable({
+      progress_data <- rv$code_challenge_progress
+      if (is.null(progress_data)) return(NULL)
+      
+      # Render the table
+      progress_data
+    }, striped = TRUE, hover = TRUE, bordered = TRUE)
   })
-}
-
-# Placeholder function for auto-grading code
-auto_grade_code <- function(code_content) {
-  # Implement your auto-grading logic here
-  # For now, it returns a random score out of 10
-  sample(0:10, 1)
 }

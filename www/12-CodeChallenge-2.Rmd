@@ -12,7 +12,8 @@ Test you on R programming in Statistical analysis and techniques.
 ### Submission Instructions:
 
 1. Click the `Go To Challenge` button below. 
-2. Complete the Code Challenge by answering all the questions. You can always go back until you have every question right.
+2. Complete the Code Challenge by answering all the questions. 
+- You can always go back until you have every question right.
 3. To view results, click the `Student Info` tab, where your performance progress is.
 
-**All the Best!!!**
+### **All the Best!!!**

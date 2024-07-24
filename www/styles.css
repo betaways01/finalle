@@ -1,7 +1,7 @@
 .responsive-iframe {
     width: 100%;
     width: 1000px; /* Optional: restrict maximum width if needed */
-    height: 95%; /* Adjust this value to make space for the button */
+    height: 700px; /* Adjust this value to make space for the button */
     border: none;
     margin-bottom: 20px; /* Optional: add some space at the bottom */
 }
