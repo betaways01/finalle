@@ -259,3 +259,18 @@ get_code_challenge_scores <- function(student_id) {
   
   return(challenge_scores)
 }
+
+# Function to validate admin credentials
+validate_admin <- function(username, password) {
+  con <- get_db_connection()
+  on.exit(dbDisconnect(con))
+  
+  result <- dbGetQuery(con, "SELECT * FROM Admins WHERE username = ? AND password = ?", 
+                       params = list(username, password))
+  
+  if (nrow(result) > 0) {
+    return(TRUE)
+  } else {
+    return(FALSE)
+  }
+}
