@@ -5,7 +5,7 @@
 The project is structured as follows:
 
 ```
-finalle fh$ tree
+Project tree
 .
 ├── CodeChallenge
 │   ├── code_challenge_1.R
@@ -148,5 +148,3 @@ finalle fh$ tree
 - **Data Integrity**: When deleting student records, ensure that all related data (exercises and challenges) are also removed to maintain database integrity.
 - **Testing**: Thoroughly test any changes in a development environment before deploying them to production.
 - **Version Control**: Use version control (e.g., Git) to track changes and revert to previous versions if necessary.
-
-This documentation provides an overview of the project structure, instructions for making changes, and guidelines for maintaining the app.
