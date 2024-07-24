@@ -1,8 +1,8 @@
-# app.R
 library(shiny)
 library(shinyAce)
 
 source("modules/exercise_observers.R")
+source("modules/challenge_observers.R")
 source("database/db_init.R")
 source("database/db_operations.R")
 initialize_db("database/database.sqlite")
@@ -11,23 +11,21 @@ initialize_db("database/database.sqlite")
 source("modules/main_ui.R")
 # Source the progress module
 source("modules/progress.R")
-source("modules/challenges.R")
-
 
 # Define server logic
 server <- function(input, output, session) {
   topics <- c("R Fundamentals", "Data Structures", "Data Visualization",
               "Data Analysis Types", "Descriptive Statistics", "Probability Statistics",
               "Inferential Hypothesis", "ANOVA", "Regression Analysis",
-              "Categorical Data Analysis", "Code Challenge 1", "Code Challenge 2",
-              "Code Challenge 3", "Data Wrangling", "Advanced R Programming")
+              "Categorical Data Analysis", "Code Challenge 1", 
+              "Code Challenge 2", "Code Challenge 3", "Data Wrangling", "Advanced R Programming")
   file_names <- c("01-R-Fundamentals.html", "02-DataStructures.html", 
                   "03-DataVisualization.html", "04-DataAnalysisTypes.html", 
                   "05-DescriptiveStatistics.html", "06-Probability-Statistics.html", 
                   "07-Inferential-Hypothesis.html", "08-ANOVA.html", 
-                  "09-RegressionAnalysis.html", "10-CategoricalDataAnalysis.html", 
-                  "11-CodeChallenge-1.html", "12-CodeChallenge-2.html", 
-                  "13-CodeChallenge-3.html", "14-DataWrangling.html", 
+                  "09-RegressionAnalysis.html", "10-CategoricalDataAnalysis.html",
+                  "11-CodeChallenge-1.html", "12-CodeChallenge-2.html",
+                  "13-CodeChallenge-3.html","14-DataWrangling.html", 
                   "15-AdvancedRProgramming.html")
   
   for (i in seq_along(file_names)) {
@@ -46,7 +44,7 @@ server <- function(input, output, session) {
   }
   
   # Reactive values to store outputs and student information
-  rv <- reactiveValues( student_name = NULL, progress = NULL)
+  rv <- reactiveValues(student_name = NULL, progress = NULL)
   
   # Show modal dialog for student name input
   showModal(modalDialog(
@@ -103,53 +101,15 @@ server <- function(input, output, session) {
     cat("Error initializing exercise observers: ", e$message, "\n")
   })
   
+  # Initialize challenge observers
+  tryCatch({
+    initializeChallengeObservers(input, output, session, rv)
+  }, error = function(e) {
+    cat("Error initializing challenge observers: ", e$message, "\n")
+  })
+  
   # Call progress module
   progressServer("progress", rv)
-
-
-  # Define exercise IDs
-  exercise_ids <- c("exercises_RFundamentals", "exercises_DataStructures", 
-                    "exercises_DataVisualization", "exercises_DataAnalysisTypes", 
-                    "exercises_DescriptiveStatistics", "exercises_ProbabilityStatistics", 
-                    "exercises_InferentialHypothesis", "exercises_ANOVA", 
-                    "exercises_RegressionAnalysis", "exercises_CategoricalDataAnalysis", 
-                    "exercises_CodeChallenge1", "exercises_CodeChallenge2", 
-                    "exercises_CodeChallenge3", "exercises_DataWrangling", 
-                    "exercises_AdvancedRProgramming")
-  # Call progress module
-  progressServer("progress", rv)
-  
-  # Call challenges module
-  challengesServer("challenges", rv)
-  
-  # Download handler for code challenge templates
-  output$download_template_CC1 <- downloadHandler(
-    filename = function() {
-      "CodeChallenge1_Template.Rmd"
-    },
-    content = function(file) {
-      file.copy("CodeChallenge/CodeChallenge1_Template.Rmd", file)
-    }
-  )
-  
-  output$download_template_CC2 <- downloadHandler(
-    filename = function() {
-      "CodeChallenge2_Template.Rmd"
-    },
-    content = function(file) {
-      file.copy("CodeChallenge/CodeChallenge2_Template.Rmd", file)
-    }
-  )
-  
-  output$download_template_CC3 <- downloadHandler(
-    filename = function() {
-      "CodeChallenge3_Template.Rmd"
-    },
-    content = function(file) {
-      file.copy("CodeChallenge/CodeChallenge3_Template.Rmd", file)
-    }
-  )
-  
 }
 
 # Run the application

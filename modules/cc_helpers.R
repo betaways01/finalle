@@ -1,20 +1,20 @@
-# modules/helpers.R
+# modules/cc_helpers.R
 library(ggplot2)
 
-reset_exercise <- function(rv, output, session) {
-  # Reset reactive values
-  rv$code_output1 <- NULL
-  rv$plot_output1 <- NULL
-  rv$code_output2 <- NULL
-  rv$plot_output2 <- NULL
-
-  # Reset UI outputs
-  output$exercise_page <- renderUI({})
-  output$submission_status <- renderText("")
+reset_challenge <- function(rv, output, session) {
+  # Reset reactive values for challenges
+  rv$challenge_code_output1 <- NULL
+  rv$challenge_plot_output1 <- NULL
+  rv$challenge_code_output2 <- NULL
+  rv$challenge_plot_output2 <- NULL
+  
+  # Reset UI outputs for challenges
+  output$challenge_page <- renderUI({})
+  output$challenge_submission_status <- renderText("")
 }
 
-# Function to evaluate R code and capture outputs, including plots
-evaluate_code <- function(code) {
+# Function to evaluate R code for challenges and capture outputs, including plots
+evaluate_challenge_code <- function(code) {
   result <- tryCatch({
     output <- eval(parse(text = code))
     
@@ -33,20 +33,20 @@ evaluate_code <- function(code) {
   })
 }
 
-# run_code function
-run_code <- function(input_id, editor_id, output_id, session) {
+# run_code function for challenges
+run_challenge_code <- function(input_id, editor_id, output_id, session) {
   observeEvent(session$input[[input_id]], {
-    # Clear previous outputs
+    # Clear previous outputs for challenges
     session$output[[paste0(output_id, "_code")]] <- renderPrint({ NULL })
     session$output[[paste0(output_id, "_plot")]] <- renderPlot({ plot.new() })
     
-    # Get the code from the editor
+    # Get the code from the editor for challenges
     code <- session$input[[editor_id]]
     
-    # Evaluate the code
-    code_output <- evaluate_code(code)
+    # Evaluate the code for challenges
+    code_output <- evaluate_challenge_code(code)
     
-    # Render the outputs
+    # Render the outputs for challenges
     if (code_output$type == "plot") {
       session$output[[paste0(output_id, "_plot")]] <- renderPlot({
         code_output$content
@@ -57,38 +57,7 @@ run_code <- function(input_id, editor_id, output_id, session) {
   })
 }
 
-show_hint <- function(hint_text, input_id, session) {
-  observeEvent(session$input[[input_id]], {
-    showModal(modalDialog(
-      hint_text,
-      footer = NULL,
-      easyClose = TRUE,
-      fade = TRUE
-    ))
-  })
-}
-
-show_solution <- function(solution_text, attempts, input_id, session) {
-  observeEvent(session$input[[input_id]], {
-    if (attempts() >= 2) {
-      showModal(modalDialog(
-        solution_text,
-        footer = NULL,
-        easyClose = TRUE,
-        fade = TRUE
-      ))
-    } else {
-      showModal(modalDialog(
-        "Try again! You need at least two attempts before seeing the solution.",
-        footer = NULL,
-        easyClose = TRUE,
-        fade = TRUE
-      ))
-    }
-  })
-}
-
-check_code <- function(correct_code, input_id, editor_id, question_id, attempts, rv, session) {
+check_challenge_code <- function(correct_code, input_id, editor_id, question_id, attempts, rv, session) {
   observeEvent(session$input[[input_id]], {
     req(session$input[[input_id]])
     student_code <- session$input[[editor_id]]
@@ -108,28 +77,18 @@ check_code <- function(correct_code, input_id, editor_id, question_id, attempts,
     
     if (is_correct) {
       showModal(modalDialog(
-        div(class = "feedback-correct", "Correct!!! Proceed to the Next Question"),
+        div(class = "challenge-feedback-correct", "Correct!!! Proceed to the Next Question"),
         footer = NULL,
         easyClose = TRUE,
         fade = TRUE
       ))
     } else {
-      attempts(attempts() + 1)
-      if (attempts() >= 2) {
-        showModal(modalDialog(
-          div(class = "feedback-incorrect", paste("Incorrect. Try again. The correct code is:", correct_code)),
-          footer = NULL,
-          easyClose = TRUE,
-          fade = TRUE
-        ))
-      } else {
-        showModal(modalDialog(
-          div(class = "feedback-incorrect", "Incorrect. Try again."),
-          footer = NULL,
-          easyClose = TRUE,
-          fade = TRUE
-        ))
-      }
+      showModal(modalDialog(
+        div(class = "challenge-feedback-incorrect", "Incorrect. Try again."),
+        footer = NULL,
+        easyClose = TRUE,
+        fade = TRUE
+      ))
     }
     
     student_id <- rv$student_id
@@ -140,7 +99,7 @@ check_code <- function(correct_code, input_id, editor_id, question_id, attempts,
   })
 }
 
-check_mcq <- function(correct_answer, input_id, question_id, feedback_id, attempts, rv, session) {
+check_challenge_mcq <- function(correct_answer, input_id, question_id, feedback_id, attempts, rv, session) {
   observeEvent(session$input[[input_id]], {
     req(session$input[[input_id]])
     selected_answer <- session$input[[input_id]]
@@ -148,28 +107,18 @@ check_mcq <- function(correct_answer, input_id, question_id, feedback_id, attemp
     
     if (is_correct) {
       showModal(modalDialog(
-        div(class = "feedback-correct", "Correct!!! Proceed to the Next Question"),
+        div(class = "challenge-feedback-correct", "Correct!!! Proceed to the Next Question"),
         footer = NULL,
         easyClose = TRUE,
         fade = TRUE
       ))
     } else {
-      attempts(attempts() + 1)
-      if (attempts() >= 2) {
-        showModal(modalDialog(
-          div(class = "feedback-incorrect", paste("Incorrect. The correct answer is", correct_answer, ".")),
-          footer = NULL,
-          easyClose = TRUE,
-          fade = TRUE
-        ))
-      } else {
-        showModal(modalDialog(
-          div(class = "feedback-incorrect", "Incorrect. Try again."),
-          footer = NULL,
-          easyClose = TRUE,
-          fade = TRUE
-        ))
-      }
+      showModal(modalDialog(
+        div(class = "challenge-feedback-incorrect", "Incorrect. Try again."),
+        footer = NULL,
+        easyClose = TRUE,
+        fade = TRUE
+      ))
     }
     
     student_id <- rv$student_id
@@ -180,11 +129,9 @@ check_mcq <- function(correct_answer, input_id, question_id, feedback_id, attemp
   })
 }
 
-generate_ui <- function(question_number, question_text, hint_id, solution_id, code_editor_id, run_button_id, check_button_id, output_id, default_code) {
+generate_challenge_ui <- function(question_number, question_text, code_editor_id, run_button_id, check_button_id, output_id, default_code) {
   tabPanel(paste("Question", question_number),
            h3(question_text),
-           actionButton(hint_id, "Hint", class = "btn btn-hint"),
-           actionButton(solution_id, "Solution", class = "btn btn-solution"),
            aceEditor(code_editor_id, mode = "r", theme = "github", height = "200px", value = default_code),
            actionButton(run_button_id, "Run", class = "btn btn-run"),
            actionButton(check_button_id, "Check", class = "btn btn-check"),
@@ -195,7 +142,7 @@ generate_ui <- function(question_number, question_text, hint_id, solution_id, co
   )
 }
 
-generate_mcq_ui <- function(question_number, question_text, mcq_id, choices, feedback_id) {
+generate_challenge_mcq_ui <- function(question_number, question_text, mcq_id, choices, feedback_id) {
   tabPanel(paste("Question", question_number),
            h3(question_text),
            radioButtons(mcq_id, "Choose one:", choices = choices, selected = character(0)),

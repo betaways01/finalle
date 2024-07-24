@@ -1,27 +1,16 @@
-# Code Challenge 1: Fundamentals and Data Structures
+# Code Challenge 1
 
-## Objective
+### Objective
 Test you on basic R programming, data structures, and initial data handling techniques.
 
-## Topics Covered:
-- Summary Statistics
-- Data Visualization with `ggplot2`
-- Probability
-- Data Handling and Manipulation
-- Custom Functions
+### Topics Covered:
+- `R fundamentals`
 
-## Submission Instructions:
+### Submission Instructions:
 
-1.  Download template below.
+1. Click the `Go To Challenge` button below. 
+2. Complete the Code Challenge by answering all the questions. 
+- You can always go back until you have every question right.
+3. To view results, click the `Student Info` tab, where your performance progress is.
 
-2.  Complete the code challenge template by filling in your solutions in the specified sections. 
-
-**DO NOT CHANGE THE STRUCTURE OF THE TEMPLATE**.
-
-3.  Save your completed R Markdown file with the filename format: `CodeChallenge1_YourName.Rmd`
-
-4.  Upload your Complete work in the `Student Info` tab. Select the the **Code Challenge 1** option, Upload your Complete work.
-
-5.  The auto-grader will evaluate your submission and provide immediate feedback. Click `View Code Challenge Score` to view results.
-
-6.  Once you are satisfied with your marks, finalize your submission which will automatically be sent to the instructor for review.
+### **All the Best!!!**

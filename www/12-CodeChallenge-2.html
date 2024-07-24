@@ -352,190 +352,32 @@ display: none;
 </div>
 
 
-<div id="code-challenge-2-descriptive-statistics-probability-and-inferential-statistics-after-module-07" class="section level1">
-<h1>Code Challenge 2: Descriptive Statistics, Probability, and
-Inferential Statistics (After Module 07)</h1>
-<p><strong>Objective</strong>: Test students on their understanding of
-descriptive statistics, probability distributions, and inferential
-statistics.</p>
-<p><strong>Modules Covered</strong>: 05-DescriptiveStatistics.Rmd,
-06-ProbabilityAndStatistics.Rmd, 07-InferentialAndHypothesis.Rmd</p>
+<div id="code-challenge-2" class="section level1">
+<h1>Code Challenge 2</h1>
+<div id="objective" class="section level3">
+<h3>Objective</h3>
+<p>Test you on R programming in Statistical analysis and techniques.</p>
+</div>
+<div id="topics-covered" class="section level3">
+<h3>Topics Covered:</h3>
 <ul>
-<li><h2 id="instructions">Instructions:</h2></li>
+<li><code>Summary Statistics</code></li>
+<li><code>Data Visualization</code> with <code>ggplot2</code></li>
+<li><code>Probability</code></li>
+<li><code>Data Handling</code> and <code>Manipulation</code></li>
 </ul>
+</div>
+<div id="submission-instructions" class="section level3">
+<h3>Submission Instructions:</h3>
 <ol style="list-style-type: decimal">
-<li><strong>Descriptive Statistics</strong>:
-<ul>
-<li><strong>Task 1</strong>: Calculate the mean, median, mode, variance,
-and standard deviation of a given dataset.</li>
-<li><strong>Task 2</strong>: Normalize and standardize the dataset.</li>
-<li><strong>Task 3</strong>: Create histograms and box plots to
-visualize the data distribution.</li>
-</ul></li>
-<li><strong>Probability Distributions</strong>:
-<ul>
-<li><strong>Task 4</strong>: Demonstrate the use of binomial, Poisson,
-and normal distributions.</li>
-<li><strong>Task 5</strong>: Simulate the Central Limit Theorem (CLT)
-using a random dataset.</li>
-</ul></li>
-<li><strong>Inferential Statistics</strong>:
-<ul>
-<li><strong>Task 6</strong>: Conduct a chi-square test to assess the
-relationship between two categorical variables.</li>
-<li><strong>Task 7</strong>: Perform a one-sample t-test to compare a
-sample mean to a known population mean.</li>
-<li><strong>Task 8</strong>: Use a non-parametric test (Mann-Whitney U
-test) to compare two groups with non-normally distributed data.</li>
-</ul></li>
+<li>Click the <code>Go To Challenge</code> button below.</li>
+<li>Complete the Code Challenge by answering all the questions. You can
+always go back until you have every question right.</li>
+<li>To view results, click the <code>Student Info</code> tab, where your
+performance progress is.</li>
 </ol>
-<ul>
-<li><h2 id="template">Template:</h2></li>
-</ul>
-<pre class="r"><code># CODE CHALLENGE 2 TEMPLATE
-
-# STUDENT NAME: ______________________
-# STUDENT ID: ________________________
-
-########################
-# SECTION 1: Descriptive Statistics
-########################
-
-# Task 1: Calculate the mean, median, mode, variance, and standard deviation of a given dataset.
-
-# Sample data
-data &lt;- c(22, 24, 24, 18, 30, 32, 19, 21, 24, 20, 23, 19, 22, 25)
-
-# Calculating mean
-mean_value &lt;- mean(data)
-print(paste(&quot;Mean:&quot;, mean_value))
-
-# Calculating median
-median_value &lt;- median(data)
-print(paste(&quot;Median:&quot;, median_value))
-
-# Calculating mode
-get_mode &lt;- function(x) {
-  uniqx &lt;- unique(x)
-  uniqx[which.max(tabulate(match(x, uniqx)))]
-}
-mode_value &lt;- get_mode(data)
-print(paste(&quot;Mode:&quot;, mode_value))
-
-# Calculating variance
-variance_value &lt;- var(data)
-print(paste(&quot;Variance:&quot;, variance_value))
-
-# Calculating standard deviation
-sd_value &lt;- sd(data)
-print(paste(&quot;Standard Deviation:&quot;, sd_value))
-
-# Task 2: Normalize and standardize the dataset.
-
-# Normalization
-normalize &lt;- function(x) {
-  (x - min(x)) / (max(x) - min(x))
-}
-normalized_data &lt;- normalize(data)
-print(&quot;Normalized Data:&quot;)
-print(normalized_data)
-
-# Standardization
-standardize &lt;- function(x) {
-  (x - mean(x)) / sd(x)
-}
-standardized_data &lt;- standardize(data)
-print(&quot;Standardized Data:&quot;)
-print(standardized_data)
-
-# Task 3: Create histograms and box plots to visualize the data distribution.
-
-library(ggplot2)
-
-# Histogram
-ggplot(data.frame(data), aes(x = data)) +
-  geom_histogram(binwidth = 1, fill = &#39;blue&#39;, color = &#39;black&#39;) +
-  ggtitle(&quot;Histogram of Data&quot;)
-
-# Box Plot
-ggplot(data.frame(data), aes(y = data)) +
-  geom_boxplot(fill = &#39;tomato&#39;) +
-  ggtitle(&quot;Box Plot of Data&quot;)
-
-########################
-# SECTION 2: Probability Distributions
-########################
-
-# Task 4: Demonstrate the use of binomial, Poisson, and normal distributions.
-
-# Binomial example: Probability of exactly 6 heads in 10 fair coin tosses
-binom_prob &lt;- dbinom(6, size = 10, prob = 0.5)
-print(paste(&quot;Binomial Probability (6 heads out of 10):&quot;, binom_prob))
-
-# Poisson example: Probability of receiving 3 emails in an hour if the average rate is 5 emails per hour
-pois_prob &lt;- dpois(3, lambda = 5)
-print(paste(&quot;Poisson Probability (3 emails):&quot;, pois_prob))
-
-# Normal distribution example: Probability density of a score at the mean of a distribution
-norm_prob &lt;- dnorm(0, mean = 0, sd = 1)
-print(paste(&quot;Normal Distribution Density (mean):&quot;, norm_prob))
-
-# Task 5: Simulate the Central Limit Theorem (CLT) using a random dataset.
-
-# Simulating sample means
-sample_means &lt;- replicate(1000, mean(runif(50, min = 0, max = 1)))
-hist(sample_means, probability = TRUE, main = &quot;CLT Simulation&quot;)
-lines(density(sample_means), col = &quot;red&quot;)
-
-########################
-# SECTION 3: Inferential Statistics
-########################
-
-# Task 6: Conduct a chi-square test to assess the relationship between two categorical variables.
-
-# Sample data: Counts of male and female students preferring vegetarian and non-vegetarian diets
-diet_data &lt;- matrix(c(30, 70, 45, 55), nrow = 2,
-                    dimnames = list(gender = c(&quot;Male&quot;, &quot;Female&quot;),
-                                    diet = c(&quot;Vegetarian&quot;, &quot;Non-Vegetarian&quot;)))
-
-# Perform Chi-Square Test
-chi_test &lt;- chisq.test(diet_data)
-print(chi_test)
-
-# Task 7: Perform a one-sample t-test to compare a sample mean to a known population mean.
-
-# Sample data
-study_times &lt;- rnorm(25, mean = 3.8, sd = 1)
-
-# Perform the t-test
-t_test_results &lt;- t.test(study_times, mu = 3.5)
-print(t_test_results)
-
-# Task 8: Use a non-parametric test (Mann-Whitney U test) to compare two groups with non-normally distributed data.
-
-# Data: Test scores from two small classes
-scores_class1 &lt;- c(88, 82, 84, 91, 87, 85, 90)
-scores_class2 &lt;- c(78, 81, 79, 74, 80, 83, 77)
-
-# Mann-Whitney U Test
-mann_whitney_test &lt;- wilcox.test(scores_class1, scores_class2)
-print(mann_whitney_test)</code></pre>
-<ul>
-<li><h2 id="submission-instructions">Submission Instructions:</h2></li>
-</ul>
-<ol style="list-style-type: decimal">
-<li>Complete the code challenge template by filling in your solutions in
-the specified sections.</li>
-<li>Save your completed R script with the filename format:
-<code>CodeChallenge2_YourName.R</code></li>
-<li>Upload your script to your GitHub repository under the Code
-Challenges folder.</li>
-<li>The auto-grader will evaluate your submission and provide immediate
-feedback.</li>
-<li>Once you are satisfied with your marks, finalize your submission
-which will automatically be sent to the instructor’s Google Drive for
-review.</li>
-</ol>
+<p><strong>All the Best!!!</strong></p>
+</div>
 </div>
 
 

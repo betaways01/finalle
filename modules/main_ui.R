@@ -45,13 +45,13 @@ ui <- fluidPage(
                         actionButton("exercises_CategoricalDataAnalysis", "Go to Exercises")),
                tabPanel("Code Challenge 1", 
                         htmlOutput("theory_CodeChallenge1"),
-                        downloadButton("download_template_CC1", "Download Template")),
+                        actionButton("CodeChallenge1", "Go To Challenge")),
                tabPanel("Code Challenge 2", 
                         htmlOutput("theory_CodeChallenge2"),
-                        downloadButton("download_template_CC2", "Download Template")),
+                        actionButton("CodeChallenge2", "Go To Challenge")),
                tabPanel("Code Challenge 3", 
                         htmlOutput("theory_CodeChallenge3"),
-                        downloadButton("download_template_CC3", "Download Template")),
+                        actionButton("CodeChallenge3", "Go To Challenge")),
                tabPanel("11. Data Wrangling", 
                         htmlOutput("theory_DataWrangling"),
                         actionButton("exercises_DataWrangling", "Go to Exercises")),
@@ -63,9 +63,9 @@ ui <- fluidPage(
     tabPanel("Exercises",
              uiOutput("exercise_page")
     ),
-  
+    
     tabPanel("Code Challenge",
-             challengesUI("challenges")
+             uiOutput("challenge_page")
     ),
     
     tabPanel("Student Info",

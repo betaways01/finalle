@@ -1,4 +1,3 @@
-# db_init.R
 library(DBI)
 library(RSQLite)
 
@@ -13,7 +12,8 @@ initialize_db <- function(db_path) {
         CREATE TABLE IF NOT EXISTS Students (
           student_id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL,
-          total_score INTEGER DEFAULT 0
+          total_score INTEGER DEFAULT 0,
+          cc_total_score INTEGER DEFAULT 0
         );
       ")
       
@@ -53,19 +53,6 @@ initialize_db <- function(db_path) {
       ")
       
       dbExecute(con, "
-        CREATE TABLE IF NOT EXISTS CodeChallenges (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          student_id INTEGER,
-          challenge_name TEXT NOT NULL,
-          code_content TEXT NOT NULL,
-          score INTEGER DEFAULT 0,
-          submission_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          UNIQUE(student_id, challenge_name),
-          FOREIGN KEY (student_id) REFERENCES Students(student_id)
-        );
-      ")
-      
-      dbExecute(con, "
         CREATE TABLE IF NOT EXISTS ExerciseScores (
           student_id INTEGER,
           exercise_id INTEGER,
@@ -73,6 +60,30 @@ initialize_db <- function(db_path) {
           PRIMARY KEY (student_id, exercise_id),
           FOREIGN KEY (student_id) REFERENCES Students(student_id),
           FOREIGN KEY (exercise_id) REFERENCES Questions(exercise_id)
+        );
+      ")
+      
+      dbExecute(con, "
+        CREATE TABLE IF NOT EXISTS CcSubmissions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          student_id INTEGER,
+          challenge_id TEXT,
+          answer TEXT,
+          is_correct INTEGER,
+          attempt_count INTEGER,
+          submission_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(student_id, challenge_id),
+          FOREIGN KEY (student_id) REFERENCES Students(student_id)
+        );
+      ")
+      
+      dbExecute(con, "
+        CREATE TABLE IF NOT EXISTS ChallengeScores (
+          student_id INTEGER,
+          challenge_id TEXT,
+          score INTEGER DEFAULT 0,
+          PRIMARY KEY (student_id, challenge_id),
+          FOREIGN KEY (student_id) REFERENCES Students(student_id)
         );
       ")
       

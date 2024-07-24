@@ -352,169 +352,38 @@ display: none;
 </div>
 
 
-<div id="code-challenge-3-anova-regression-analysis-and-logistic-regression-after-module-10" class="section level1">
-<h1>Code Challenge 3: ANOVA, Regression Analysis, and Logistic
-Regression (After Module 10)</h1>
-<p><strong>Objective</strong>: Test students on their understanding of
-ANOVA, regression analysis, and logistic regression.</p>
-<p><strong>Modules Covered</strong>: 08-ANOVA.Rmd,
-09-RegressionAnalysis.Rmd, 10-CategoricalDataAnalysis.Rmd</p>
+<div id="code-challenge-3" class="section level1">
+<h1>Code Challenge 3</h1>
+<div id="objective" class="section level3">
+<h3>Objective</h3>
+<p>Test you on basic R programming, data structures, and initial data
+handling techniques.</p>
+</div>
+<div id="topics-covered" class="section level3">
+<h3>Topics Covered:</h3>
 <ul>
-<li><h2 id="instructions">Instructions:</h2></li>
+<li><code>ANOVA</code></li>
+<li><code>Regression Analysis</code></li>
+<li><code>Logistic Regression</code></li>
 </ul>
+</div>
+<div id="submission-instructions" class="section level3">
+<h3>Submission Instructions:</h3>
 <ol style="list-style-type: decimal">
-<li><strong>ANOVA</strong>:
-<ul>
-<li><strong>Task 1</strong>: Conduct a one-way ANOVA to determine if
-there are significant differences in group means.</li>
-<li><strong>Task 2</strong>: Perform a two-way ANOVA to analyze the
-interaction effects of two factors on a response variable.</li>
-</ul></li>
-<li><strong>Regression Analysis</strong>:
-<ul>
-<li><strong>Task 3</strong>: Fit a simple linear regression model and
-interpret the results.</li>
-<li><strong>Task 4</strong>: Fit a multiple linear regression model,
-perform residual analysis, and check for heteroscedasticity and
-multicollinearity.</li>
-</ul></li>
-<li><strong>Logistic Regression</strong>:
-<ul>
-<li><strong>Task 5</strong>: Fit a logistic regression model with a
-binary outcome and interpret the results.</li>
-<li><strong>Task 6</strong>: Evaluate the logistic regression model
-performance using ROC curves and AUC.</li>
-</ul></li>
+<li>Click the <code>Go To Challenge</code> button below.</li>
+<li>Complete the Code Challenge by answering all the questions.</li>
 </ol>
 <ul>
-<li><h2 id="template">Template:</h2></li>
+<li>You can always go back until you have every question right.</li>
 </ul>
-<pre class="r"><code># CODE CHALLENGE 3 TEMPLATE
-
-# STUDENT NAME: ______________________
-# STUDENT ID: ________________________
-
-########################
-# SECTION 1: ANOVA
-########################
-
-# Task 1: Conduct a one-way ANOVA to determine if there are significant differences in group means.
-
-# Sample data: Weight loss measurements for three diet groups
-diet1 &lt;- c(2.1, 2.3, 1.8, 2.5, 2.0)
-diet2 &lt;- c(2.0, 1.9, 2.2, 2.1, 1.8)
-diet3 &lt;- c(1.7, 1.8, 1.6, 1.9, 1.5)
-
-weight_loss &lt;- data.frame(
-  loss = c(diet1, diet2, diet3),
-  diet = factor(rep(c(&quot;Diet1&quot;, &quot;Diet2&quot;, &quot;Diet3&quot;), each = 5))
-)
-
-# Perform One-Way ANOVA
-anova_result &lt;- aov(loss ~ diet, data = weight_loss)
-summary(anova_result)
-
-# Perform post hoc test
-tukey_result &lt;- TukeyHSD(anova_result)
-print(tukey_result)
-
-# Task 2: Perform a two-way ANOVA to analyze the interaction effects of two factors on a response variable.
-
-# Sample data: Plant growth measurements for different fertilizer and watering conditions
-growth &lt;- c(20, 22, 19, 24, 23, 25, 18, 21, 22, 23, 26, 24, 22, 21, 20)
-fertilizer &lt;- factor(rep(c(&quot;Fertilizer1&quot;, &quot;Fertilizer2&quot;, &quot;Fertilizer3&quot;), each = 5))
-watering &lt;- factor(rep(c(&quot;Watering1&quot;, &quot;Watering2&quot;, &quot;Watering3&quot;), times = 5))
-
-plant_growth &lt;- data.frame(growth, fertilizer, watering)
-
-# Perform Two-Way ANOVA
-anova_result_2way &lt;- aov(growth ~ fertilizer * watering, data = plant_growth)
-summary(anova_result_2way)
-
-########################
-# SECTION 2: Regression Analysis
-########################
-
-# Task 3: Fit a simple linear regression model and interpret the results.
-
-# Sample data: Advertising spend and sales
-advertising &lt;- c(230, 150, 300, 290, 180, 270, 320, 210, 250, 190)
-sales &lt;- c(480, 340, 600, 590, 380, 540, 640, 410, 500, 430)
-
-data &lt;- data.frame(sales, advertising)
-
-# Fit Simple Linear Regression
-model_simple &lt;- lm(sales ~ advertising, data = data)
-summary(model_simple)
-
-# Task 4: Fit a multiple linear regression model, perform residual analysis, and check for heteroscedasticity and multicollinearity.
-
-# Sample data: House prices, square footage, and number of bedrooms
-prices &lt;- c(300000, 350000, 400000, 250000, 450000, 500000)
-sqft &lt;- c(1500, 1600, 1700, 1400, 1800, 2000)
-bedrooms &lt;- c(3, 3, 4, 2, 4, 5)
-
-house_data &lt;- data.frame(prices, sqft, bedrooms)
-
-# Fit Multiple Linear Regression
-model_multiple &lt;- lm(prices ~ sqft + bedrooms, data = house_data)
-summary(model_multiple)
-
-# Residual analysis
-par(mfrow = c(2, 2))
-plot(model_multiple)
-
-# Check for heteroscedasticity
-library(car)
-ncvTest(model_multiple)
-
-# Check for multicollinearity
-vif(model_multiple)
-
-########################
-# SECTION 3: Logistic Regression
-########################
-
-# Task 5: Fit a logistic regression model with a binary outcome and interpret the results.
-
-# Sample data
-set.seed(123)
-x1 &lt;- rnorm(100)
-x2 &lt;- rnorm(100)
-y &lt;- rbinom(100, 1, prob = 1 / (1 + exp(-(0.5 + 1.5 * x1 - 1 * x2))))
-
-data_logit &lt;- data.frame(y, x1, x2)
-
-# Fit Logistic Regression
-model_logit &lt;- glm(y ~ x1 + x2, data = data_logit, family = binomial)
-summary(model_logit)
-
-# Interpretation of coefficients
-exp(coef(model_logit))
-
-# Task 6: Evaluate the logistic regression model performance using ROC curves and AUC.
-
-# ROC Curve and AUC
-library(pROC)
-roc_curve &lt;- roc(data_logit$y, fitted(model_logit))
-plot(roc_curve)
-auc(roc_curve)</code></pre>
-<ul>
-<li><h2 id="submission-instructions">Submission Instructions:</h2></li>
-</ul>
-<ol style="list-style-type: decimal">
-<li>Complete the code challenge template by filling in your solutions in
-the specified sections.</li>
-<li>Save your completed R script with the filename format:
-<code>CodeChallenge3_YourName.R</code></li>
-<li>Upload your script to your GitHub repository under the Code
-Challenges folder.</li>
-<li>The auto-grader will evaluate your submission and provide immediate
-feedback.</li>
-<li>Once you are satisfied with your marks, finalize your submission
-which will automatically be sent to the instructor’s Google Drive for
-review.</li>
+<ol start="3" style="list-style-type: decimal">
+<li>To view results, click the <code>Student Info</code> tab, where your
+performance progress is.</li>
 </ol>
+</div>
+<div id="all-the-best" class="section level3">
+<h3><strong>All the Best!!!</strong></h3>
+</div>
 </div>
 
 
