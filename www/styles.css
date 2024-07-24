@@ -1,7 +1,7 @@
 .responsive-iframe {
     width: 100%;
     width: 1000px; /* Optional: restrict maximum width if needed */
-    height: 600px; /* Adjust this value to make space for the button */
+    height: 95%; /* Adjust this value to make space for the button */
     border: none;
     margin-bottom: 20px; /* Optional: add some space at the bottom */
 }
@@ -17,6 +17,22 @@
 }
 
 .feedback-incorrect {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.challenge-feedback-correct {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.challenge-feedback-incorrect {
   background-color: #f8d7da;
   color: #721c24;
   padding: 10px;

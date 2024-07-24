@@ -53,6 +53,20 @@ initialize_db <- function(db_path) {
       ")
       
       dbExecute(con, "
+        CREATE TABLE IF NOT EXISTS CcSubmissions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          student_id INTEGER,
+          question_id TEXT,
+          answer TEXT,
+          is_correct INTEGER,
+          attempt_count INTEGER,
+          submission_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(student_id, question_id),
+          FOREIGN KEY (student_id) REFERENCES Students(student_id)
+        );
+      ")
+      
+      dbExecute(con, "
         CREATE TABLE IF NOT EXISTS ExerciseScores (
           student_id INTEGER,
           exercise_id INTEGER,
@@ -60,20 +74,6 @@ initialize_db <- function(db_path) {
           PRIMARY KEY (student_id, exercise_id),
           FOREIGN KEY (student_id) REFERENCES Students(student_id),
           FOREIGN KEY (exercise_id) REFERENCES Questions(exercise_id)
-        );
-      ")
-      
-      dbExecute(con, "
-        CREATE TABLE IF NOT EXISTS CcSubmissions (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          student_id INTEGER,
-          challenge_id TEXT,
-          answer TEXT,
-          is_correct INTEGER,
-          attempt_count INTEGER,
-          submission_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          UNIQUE(student_id, challenge_id),
-          FOREIGN KEY (student_id) REFERENCES Students(student_id)
         );
       ")
       

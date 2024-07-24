@@ -1,4 +1,3 @@
-# db_operations.R
 library(DBI)
 library(RSQLite)
 
@@ -16,7 +15,10 @@ get_attempt_count <- function(student_id, question_id) {
   }
   con <- get_db_connection()
   on.exit(dbDisconnect(con))
-  result <- dbGetQuery(con, "SELECT attempt_count FROM Submissions WHERE student_id = ? AND question_id = ?", params = list(student_id, question_id))
+  
+  table <- ifelse(grepl("^cc", question_id), "CcSubmissions", "Submissions")
+  
+  result <- dbGetQuery(con, paste0("SELECT attempt_count FROM ", table, " WHERE student_id = ? AND question_id = ?"), params = list(student_id, question_id))
   
   if (nrow(result) == 0) {
     return(0)
@@ -37,11 +39,19 @@ add_submission <- function(student_id, question_id, answer, is_correct, attempt_
   
   con <- get_db_connection()
   on.exit(dbDisconnect(con))
-  dbExecute(con, "INSERT OR REPLACE INTO Submissions (student_id, question_id, answer, is_correct, attempt_count) VALUES (?, ?, ?, ?, ?)", 
+  
+  table <- ifelse(grepl("^cc", question_id), "CcSubmissions", "Submissions")
+  
+  dbExecute(con, paste0("INSERT OR REPLACE INTO ", table, " (student_id, question_id, answer, is_correct, attempt_count) VALUES (?, ?, ?, ?, ?)"), 
             params = list(student_id, question_id, answer, is_correct, attempt_count))
   
-  # Update the exercise score
-  update_exercise_score(student_id, question_id)
+  if (table == "CcSubmissions") {
+    # Update the challenge score
+    update_challenge_score(student_id, question_id)
+  } else {
+    # Update the exercise score
+    update_exercise_score(student_id, question_id)
+  }
   
   # Update the overall score
   update_overall_score(student_id)
@@ -60,6 +70,17 @@ update_exercise_score <- function(student_id, question_id) {
             params = list(student_id, exercise_id, total_score))
 }
 
+# Function to update the challenge score for a student
+update_challenge_score <- function(student_id, question_id) {
+  con <- get_db_connection()
+  on.exit(dbDisconnect(con))
+  
+  total_score <- dbGetQuery(con, "SELECT SUM(is_correct) as score FROM CcSubmissions WHERE student_id = ? AND question_id = ?", 
+                            params = list(student_id, question_id))$score
+  dbExecute(con, "INSERT OR REPLACE INTO ChallengeScores (student_id, challenge_id, score) VALUES (?, ?, ?)", 
+            params = list(student_id, question_id, total_score))
+}
+
 # Function to update the overall score for a student
 update_overall_score <- function(student_id) {
   if (is.null(student_id) || student_id == "") {
@@ -68,8 +89,14 @@ update_overall_score <- function(student_id) {
   
   con <- get_db_connection()
   on.exit(dbDisconnect(con))
-  score <- dbGetQuery(con, "SELECT SUM(score) as overall_score FROM ExerciseScores WHERE student_id = ?", params = list(student_id))$overall_score
-  dbExecute(con, "UPDATE Students SET total_score = ? WHERE student_id = ?", params = list(score, student_id))
+  
+  # Update exercise total score
+  ex_total_score <- dbGetQuery(con, "SELECT SUM(score) as total_score FROM ExerciseScores WHERE student_id = ?", params = list(student_id))$total_score
+  dbExecute(con, "UPDATE Students SET total_score = ? WHERE student_id = ?", params = list(ex_total_score, student_id))
+  
+  # Update code challenge total score
+  cc_total_score <- dbGetQuery(con, "SELECT SUM(score) as total_score FROM ChallengeScores WHERE student_id = ?", params = list(student_id))$total_score
+  dbExecute(con, "UPDATE Students SET cc_total_score = ? WHERE student_id = ?", params = list(cc_total_score, student_id))
 }
 
 # Function to get or create student ID
@@ -113,6 +140,27 @@ get_exercise_scores <- function(student_id) {
   return(exercise_scores)
 }
 
+# Function to get challenge scores
+get_challenge_scores <- function(student_id) {
+  if (is.null(student_id) || student_id == "") {
+    stop("Student ID is missing")
+  }
+  con <- get_db_connection()
+  on.exit(dbDisconnect(con))
+  
+  challenge_scores <- dbGetQuery(con, "
+    SELECT 
+      challenge_id, 
+      score 
+    FROM 
+      ChallengeScores 
+    WHERE 
+      student_id = ?", 
+                                 params = list(student_id))
+  
+  return(challenge_scores)
+}
+
 # Function to get total score
 get_total_score <- function(student_id) {
   if (is.null(student_id) || student_id == "") {
@@ -121,20 +169,21 @@ get_total_score <- function(student_id) {
   con <- get_db_connection()
   on.exit(dbDisconnect(con))
   
-  total_score <- dbGetQuery(con, "
+  total_scores <- dbGetQuery(con, "
     SELECT 
-      total_score 
+      total_score,
+      cc_total_score
     FROM 
       Students 
     WHERE 
       student_id = ?", 
-                            params = list(student_id))
+                             params = list(student_id))
   
-  if (nrow(total_score) == 0) {
-    return(0)
+  if (nrow(total_scores) == 0) {
+    return(list(total_score = 0, cc_total_score = 0))
   }
   
-  return(total_score$total_score[1])
+  return(list(total_score = total_scores$total_score[1], cc_total_score = total_scores$cc_total_score[1]))
 }
 
 # New Function: Get the latest progress of a student
@@ -168,21 +217,26 @@ get_latest_student_progress <- function(student_id) {
 }
 
 # Add or update a code challenge submission
-add_code_challenge_submission <- function(student_id, challenge_name, code_content, score) {
+add_code_challenge_submission <- function(student_id, question_id, answer, is_correct, attempt_count) {
   if (is.null(student_id) || student_id == "" || 
-      is.null(challenge_name) || challenge_name == "" || 
-      is.null(code_content) || length(code_content) == 0 || 
-      is.null(score)) {
+      is.null(question_id) || question_id == "" || 
+      is.null(answer) || length(answer) == 0 || 
+      is.null(is_correct) || length(is_correct) == 0 || 
+      is.null(attempt_count) || length(attempt_count) == 0) {
     stop("Missing parameters for add_code_challenge_submission")
   }
   
   con <- get_db_connection()
   on.exit(dbDisconnect(con))
   
-  dbExecute(con, "
-    INSERT OR REPLACE INTO CodeChallenges (student_id, challenge_name, code_content, score, submission_date) 
-    VALUES (?, ?, ?, ?, datetime('now'))
-  ", params = list(student_id, challenge_name, code_content, score))
+  dbExecute(con, "INSERT OR REPLACE INTO CcSubmissions (student_id, question_id, answer, is_correct, attempt_count) VALUES (?, ?, ?, ?, ?)", 
+            params = list(student_id, question_id, answer, is_correct, attempt_count))
+  
+  # Update the challenge score
+  update_challenge_score(student_id, question_id)
+  
+  # Update the overall score
+  update_overall_score(student_id)
 }
 
 # Function to get code challenge scores for a student
@@ -193,11 +247,15 @@ get_code_challenge_scores <- function(student_id) {
   con <- get_db_connection()
   on.exit(dbDisconnect(con))
   
-  scores <- dbGetQuery(con, "
-    SELECT challenge_name, score, submission_date 
-    FROM CodeChallenges
-    WHERE student_id = ?
-  ", params = list(student_id))
+  challenge_scores <- dbGetQuery(con, "
+    SELECT 
+      challenge_id, 
+      score 
+    FROM 
+      ChallengeScores 
+    WHERE 
+      student_id = ?", 
+                                 params = list(student_id))
   
-  return(scores)
+  return(challenge_scores)
 }

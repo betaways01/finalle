@@ -77,14 +77,14 @@ check_challenge_code <- function(correct_code, input_id, editor_id, question_id,
     
     if (is_correct) {
       showModal(modalDialog(
-        div(class = "challenge-feedback-correct", "Correct!!! Proceed to the Next Question"),
+        div(class = "feedback-correct", "Correct!!! Proceed to the Next Question"),
         footer = NULL,
         easyClose = TRUE,
         fade = TRUE
       ))
     } else {
       showModal(modalDialog(
-        div(class = "challenge-feedback-incorrect", "Incorrect. Try again."),
+        div(class = "feedback-incorrect", "Incorrect. Try again."),
         footer = NULL,
         easyClose = TRUE,
         fade = TRUE
@@ -107,14 +107,14 @@ check_challenge_mcq <- function(correct_answer, input_id, question_id, feedback_
     
     if (is_correct) {
       showModal(modalDialog(
-        div(class = "challenge-feedback-correct", "Correct!!! Proceed to the Next Question"),
+        div(class = "feedback-correct", "Correct!!! Proceed to the Next Question"),
         footer = NULL,
         easyClose = TRUE,
         fade = TRUE
       ))
     } else {
       showModal(modalDialog(
-        div(class = "challenge-feedback-incorrect", "Incorrect. Try again."),
+        div(class = "feedback-incorrect", "Incorrect. Try again."),
         footer = NULL,
         easyClose = TRUE,
         fade = TRUE
