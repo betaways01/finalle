@@ -1,0 +1,1 @@
+install.packages(c("shiny", "shinyAce", "DBI", "RSQLite", "ROCR", "ggplot2", "caret", "dplyr", "ResourceSelection", "tidyverse", "lubridate", "stringr", "parallel", "car", "PerformanceAnalytics", "part", "DT"))
